@@ -1,0 +1,385 @@
+{
+  "session_id": "e6129792-626d-48e2-bb79-be9d34b32829",
+  "algorithm": "Bidirectional Anchor-and-Grounding Pipeline",
+  "compared_against": "targeted-inverted-transcript-extraction-method",
+  "raw_log": "~/.gemini/antigravity-cli/brain/e6129792-626d-48e2-bb79-be9d34b32829/.system_generated/logs/transcript.jsonl",
+  "filtered_log": "~/.gemini/antigravity-cli/brain/e6129792-626d-48e2-bb79-be9d34b32829/clean_dialogue.jsonl",
+  "resume_spine": "~/.gemini/antigravity-cli/brain/e6129792-626d-48e2-bb79-be9d34b32829/resume_final_audited.md",
+  "handbook_output": ".docs/guides/赵晟-面试项目逐行应答与防御手册.md",
+  "raw_turns_count": 956,
+  "filtered_turns_count": 140,
+  "filtered_user_turns": 71,
+  "filtered_planner_turns": 69,
+  "stage1_filter": {
+    "kept_types": ["USER_INPUT", "PLANNER_RESPONSE"],
+    "dropped_type_counts_in_raw": {
+      "PLANNER_RESPONSE": 469,
+      "GENERIC": 399,
+      "USER_INPUT": 71,
+      "SYSTEM_MESSAGE": 11,
+      "CHECKPOINT": 4,
+      "ERROR_MESSAGE": 2
+    },
+    "note": "Stage 1 skipped re-derivation; used pre-built clean_dialogue.jsonl (140 nonempty USER_INPUT/PLANNER_RESPONSE rows). Raw type histogram is from transcript.jsonl; GENERIC/tool/checkpoint/error rows were excluded."
+  },
+  "backward_scan": {
+    "direction": "step 956 -> step 0",
+    "tail_window_used": "USER/PLANNER steps 897-956 plus mid-session decision steps 536-775",
+    "candidate_anchors_extracted": 22
+  },
+  "detected_branches": [
+    {
+      "project_name": "Raven Agent / 异构 A2A Supervisor 协作网络",
+      "final_decisions": [
+        {
+          "topic": "宏观架构命名",
+          "confirmed_decision": "Supervisor 分层治理 + 按需 Multi-Agent，明确不是 Swarm",
+          "confirmed_at_step": 543,
+          "superseded_old_choice": "Swarm / 去中心自由协商 / 自发现自组织",
+          "scope_constraints": "仅描述协作层组织方式；Orca 为控制面，Arborist-Orca 为 harness。单仓小改仍鼓励单 Agent。",
+          "needs_grounding": false,
+          "grounded_quote": "Arborist-Orca 的体系本质上是「以 Supervisor（分层主管管控）为骨架、以 HoH（元治具）为边界的 Multi-Agent 工程体系」，它绝对不是 Swarm 架构。"
+        },
+        {
+          "topic": "DAG 入度与 nonce 质量门禁如何配合",
+          "confirmed_decision": "口语可用「入度」；书面用「扣减入度解锁下游」。Worker 提交≠ACK≠验收；Reviewer 单测证据后才减入度；人改需求单独切补丁子图。",
+          "confirmed_at_step": 554,
+          "superseded_old_choice": "把 nonce 三阶段说成 exactly-once / 消息保序",
+          "scope_constraints": "DAG Planner / PTY 内核不是个人从 0 实现；门禁是协作约定叠在既有调度上。",
+          "needs_grounding": true,
+          "pronoun_resolution": "用户 Step 546「这个配合」= DAG 入度解锁 × Nonce Commit/ACK/Acceptance 三阶段，不是另做一套 2PC。",
+          "grounded_quote": "是一个极其标准、如假包换的计算机科学与图论专有名词"
+        },
+        {
+          "topic": "PTY 投递语义",
+          "confirmed_decision": "提交 ≠ ACK ≠ 任务完成；同 nonce 在 blocked/stalled 后最多再发一次；接收端约定去重。",
+          "confirmed_at_step": 549,
+          "superseded_old_choice": "exactly-once、保序、硬 2PC 幂等",
+          "scope_constraints": "只覆盖 TUI/PTY 对等信道，不推广为金融级幂等。",
+          "needs_grounding": false
+        },
+        {
+          "topic": "Brand Adapter 与成本路由用词",
+          "confirmed_decision": "Brand Adapter 统一启动/投递/探活；Role-to-Model / Model-Tiering。禁止 Model-Fusion。",
+          "confirmed_at_step": 731,
+          "superseded_old_choice": "Model-Fusion、模型权重融合、代码搬砖",
+          "scope_constraints": "Token 压降 20%+ 仅为简历对比口径，无本会话核验的生产报表。",
+          "needs_grounding": true,
+          "pronoun_resolution": "用户「其实就是按角色和模型关联」= Model-Tiering，不是 Fusion。"
+        },
+        {
+          "topic": "去包装后的盛大叙事",
+          "confirmed_decision": "用 Registry-First、信封/nonce、Worktree 隔离、半自动改进（人确认）；禁止自发现自组织、递归自进化、Ontology。",
+          "confirmed_at_step": 756,
+          "superseded_old_choice": "不可靠信道上的自发现自组织；半自动递归改进",
+          "scope_constraints": "12 小时无人值守只证明可行性。评测框架归算法团队。",
+          "needs_grounding": false
+        }
+      ],
+      "rejected_alternatives": [
+        "Swarm 架构",
+        "自治自发现 / DHT / 向量搜人",
+        "exactly-once / 消息保序",
+        "Model-Fusion",
+        "从 0 实现 PTY/DAG/Raven-Code/sandbox",
+        "把公司产品 4k Stars 算作个人开源"
+      ]
+    },
+    {
+      "project_name": "EverMe KnowledgeHub & EverOS LLMWiki",
+      "final_decisions": [
+        {
+          "topic": "抽取模型命名",
+          "confirmed_decision": "简历/口语只写 Schema-constrained Decision Model（模式约束决策模型），不写 Jev",
+          "confirmed_at_step": 898,
+          "superseded_old_choice": "结合 Jev 决策模型 / 爆火的 Jev",
+          "scope_constraints": "项目起始 2026.07；Jev 产品 2026.09 中旬才发布，时间线穿帮。Jev≠通用范式名。",
+          "needs_grounding": true,
+          "pronoun_resolution": "用户 Step 897「Jev是模式约束决策模型吗」→ 否，后者是范式，前者是产品。",
+          "grounded_quote": "**Jev** 是具体的商业模型产品名"
+        },
+        {
+          "topic": "检索-渐进式双路 MCP",
+          "confirmed_decision": "保留双路：点状走 search，宏观走 list_* → get_topic；踩空从检索降级到目录。工具名六件套，无 read_section。",
+          "confirmed_at_step": 905,
+          "superseded_old_choice": "只保留渐进式三级、丢掉检索路；或虚构 read_section",
+          "scope_constraints": "Token -55% 与 100% 可溯源是简历口径。100% 指引用链条能点回切片，不是模型判断正确率。",
+          "needs_grounding": true,
+          "pronoun_resolution": "「双路」= 直接检索路 + 渐进式披露路，不是主路 RRF 的 Dense/Sparse 双路。"
+        },
+        {
+          "topic": "标签子集旁路与重排用词",
+          "confirmed_decision": "旁路补长尾/偏好候选，按文档 ID 去重后送 Reranker；写语义重排模型，不写 Encoder。Recall@5 作为简历指标名。",
+          "confirmed_at_step": 902,
+          "superseded_old_choice": "写成 Encoder；「精准重排合并并保留至重排」病句；把旁路说成第三路 RRF",
+          "scope_constraints": "Recall@5 +25% 无离线评测表；旁路是 companion 并集进 rerank，不投第三票。",
+          "needs_grounding": false
+        },
+        {
+          "topic": "是否引入 Elasticsearch 做 BM25",
+          "confirmed_decision": "不加 ES。Keyword + Embedding 仍称轻量 Hybrid。Sparse 用 PG 精确匹配或应用层 rank_bm25。",
+          "confirmed_at_step": 951,
+          "superseded_old_choice": "方案 B：上 Elasticsearch / ParadeDB(pg_search) 跑正宗 BM25；简历技术栈保留 Elasticsearch",
+          "scope_constraints": "私有化一体机/政企机房 TCO；用户 Step 950 明确「强烈不希望加」。简历定稿技术矩阵仍残留 ES，属未改干净的文档债。",
+          "needs_grounding": true,
+          "pronoun_resolution": "用户「用Keyword+Embedding、不用hybrid」→ Hybrid 是方法论，不等于 ES；最终口头称 Keyword+Embedding 双路 / 轻量 Hybrid。",
+          "grounded_quote": "千万别加 ES！强烈建议你坚决不要加！"
+        },
+        {
+          "topic": "EverMe 抽取置信度公式",
+          "confirmed_decision": "0.6 * P_model(类别概率) + 0.4 * CosineSim(tag, doc)；阈值约 0.70 进 Uncategorized；旁路新词发现不直接污染正式 Tag 树。",
+          "confirmed_at_step": 955,
+          "superseded_old_choice": "LLM 自评 1-10；把万象审核置信度公式误套到抽取",
+          "scope_constraints": "本公式只用于结构化抽取/打标，不用于万象审核项分流。",
+          "needs_grounding": false,
+          "grounded_quote": "两个客观信号加权得出"
+        }
+      ],
+      "rejected_alternatives": [
+        "Jev 决策模型写入简历",
+        "Elasticsearch / ParadeDB 作为 Sparse 引擎",
+        "只做 RAG 检索、取消渐进式",
+        "把旁路写成第三路 RRF",
+        "LLM 自评置信度",
+        "Ontology / 知识图谱表述"
+      ]
+    },
+    {
+      "project_name": "万象行业大模型平台（文书审核）",
+      "final_decisions": [
+        {
+          "topic": "与一体机是否合并展示",
+          "confirmed_decision": "分开两个项目，禁止把万象和一体机写成一段",
+          "confirmed_at_step": 740,
+          "superseded_old_choice": "商汤经历合并叙述",
+          "scope_constraints": "万象主线收敛为文书合规审核；删除桥梁结构优化等超纲业务。",
+          "needs_grounding": false
+        },
+        {
+          "topic": "是否 Multi-Agent / 是否四段都是 ReAct",
+          "confirmed_decision": "工作流约束的 Agentic Workflow。需求拆解=单轮 Schema；检索=确定性管线（可不调 LLM）；审核=受限 CoT；校对=交叉验真。",
+          "confirmed_at_step": 758,
+          "superseded_old_choice": "四个 Agent 都是 ReAct；自由 Multi-Agent / AutoGen 群聊",
+          "scope_constraints": "面试主动挑破 Pipeline vs Multi-Agent 边界，不跟风硬吹。",
+          "needs_grounding": true,
+          "pronoun_resolution": "用户 Step 568「只算ReAct+Workflow吧」→ 采纳为工作流约束多智能体，不是否定角色分工。"
+        },
+        {
+          "topic": "重试/防环控制面",
+          "confirmed_decision": "控制面归确定性代码（retry_count、熔断、防环）；不让 Router Agent 用 LLM 判断是否重试。讲述按现代化改造，不提早期 POC。",
+          "confirmed_at_step": 769,
+          "superseded_old_choice": "每次重试都过 Router Agent 让模型判断",
+          "scope_constraints": "保留原设计的三思想：禁止子节点 P2P 成环、全局预算、超限降级人工。",
+          "needs_grounding": true,
+          "pronoun_resolution": "用户 Step 759「需求Agent也是Router Agent管理每次重试」= 被否决的落地方式，思想保留。"
+        },
+        {
+          "topic": "PDF 原文高亮定位",
+          "confirmed_decision": "切片保留 page+bbox，前端 pdf.js + Canvas 遮罩。PDF 不用字符 offset。",
+          "confirmed_at_step": 818,
+          "superseded_old_choice": "用原文字符排序/character offset 在 PDF 上定位",
+          "scope_constraints": "Word 若直接渲染才用段落 Range；政企入库常转 PDF 走同一几何链。",
+          "needs_grounding": false
+        },
+        {
+          "topic": "幻觉率定义与 3% vs 0 容忍",
+          "confirmed_decision": "幻觉=虚构法条或歪曲原文。致命硬幻觉用字串比对门禁；残差低置信进人工签批，不静默给客户。",
+          "confirmed_at_step": 921,
+          "superseded_old_choice": "暗示模型本身可 0 幻觉；或把 3% 说成不可解释残差仍直接上线",
+          "scope_constraints": "3%、40% 成功率为简历口径，本会话无 Golden set 原始报表。",
+          "needs_grounding": false
+        },
+        {
+          "topic": "万象审核置信度算法",
+          "confirmed_decision": "禁止 LLM 自评。主口径采用用户美团 2 面分层算法（规则/AC/编辑距离/原文回查）。923 复合加权可作补充，不覆盖 941。",
+          "confirmed_at_step": 941,
+          "superseded_old_choice": "让 Prompt 输出置信度 1-10",
+          "scope_constraints": "与 EverMe 抽取公式（955）分属不同项目，禁止串用。",
+          "needs_grounding": true,
+          "pronoun_resolution": "用户 Step 924「我记得我有个置信度算法」→ 指向美团 2 面 ProofreaderAgent 分层实现，不是 923 的通用四信号公式。"
+        },
+        {
+          "topic": "多信号算法用途",
+          "confirmed_decision": "多信号加权重排用于召回后的证据切片治理和约 40% Token 预算，不是原始文档分块算法。",
+          "confirmed_at_step": 945,
+          "superseded_old_choice": "把多信号算法说成切分原始文档的分片器",
+          "scope_constraints": "原始切分仍是语义/滑动窗口。",
+          "needs_grounding": true,
+          "pronoun_resolution": "用户「是用于分片的吗」→ 否。"
+        },
+        {
+          "topic": "可观测性表述",
+          "confirmed_decision": "可以写 OTel 追踪 LLM 调用链与 RAG 召回切片；用户不想写「切片生命周期」。",
+          "confirmed_at_step": 913,
+          "superseded_old_choice": "切片生命周期 作为简历用语",
+          "scope_constraints": "MTTR 小时级→5 分钟、500+ 切片并发、解析失败率 0.2% 为规划口径。",
+          "needs_grounding": false
+        }
+      ],
+      "rejected_alternatives": [
+        "万象与一体机合并",
+        "四阶段全是 ReAct",
+        "自由 Multi-Agent",
+        "Router Agent 负责数值重试判断",
+        "PDF 字符 offset 定位",
+        "LLM 自评置信度",
+        "多信号算法=文档分片",
+        "简历写切片生命周期",
+        "文书审核挂 SenseChat 技术创新奖"
+      ]
+    },
+    {
+      "project_name": "商汤大模型一体机（对话与 RAG）",
+      "final_decisions": [
+        {
+          "topic": "项目边界",
+          "confirmed_decision": "独立于万象。讲流式对话、stop/continue、RAG 分层存储与引用。奖项挂产品。",
+          "confirmed_at_step": 813,
+          "superseded_old_choice": "与万象混写；把奖挂到个人或挂到文书审核",
+          "scope_constraints": "TTFT<500ms / 推送<100ms 用原口径；不说零中断/零丢失。",
+          "needs_grounding": false
+        },
+        {
+          "topic": "去包装组织方式",
+          "confirmed_decision": "保留「做了什么、解决什么问题、拿到什么结果」；卸掉虚浮 Multi-Agent/反向工具调用包装。",
+          "confirmed_at_step": 752,
+          "superseded_old_choice": "用 AI 虚词包装扎实工程",
+          "scope_constraints": "用户肯定新的组织方式，但要求能被戳穿的包装卸下。",
+          "needs_grounding": false
+        }
+      ],
+      "rejected_alternatives": [
+        "与万象合并成一个商汤项目",
+        "stop 用杀进程实现",
+        "零中断 / 零丢失绝对化"
+      ]
+    },
+    {
+      "project_name": "FNZ 资管交易 & ToDesk 长连接中台",
+      "final_decisions": [
+        {
+          "topic": "中间件选型",
+          "confirmed_decision": "ToDesk 中台保持 RabbitMQ 等既有栈；本会话没有用 Kafka 替换 RabbitMQ。",
+          "confirmed_at_step": 951,
+          "superseded_old_choice": "无。Kafka 仅作为「不要无脑堆 ES/Kafka」的反例",
+          "scope_constraints": "算法说明里的「Kafka 推翻 RabbitMQ」不是本会话事实，评测时不得当作已抽取决策。",
+          "needs_grounding": false
+        },
+        {
+          "topic": "一致性与规模口径",
+          "confirmed_decision": "机制可讲 TCC + 锁 + 补偿、CAS 批处理、WebSocket 保活。口头不承诺零资损；4000 万按装机量，不按并发长连接。",
+          "confirmed_at_step": 752,
+          "superseded_old_choice": "万亿资产代客交易零资损；4000 万长连接/并发",
+          "scope_constraints": "简历定稿仍残留零资损与「4000 万台远程终端高频鉴权」表述，手册按去包装红线降级。三井住友银行 vs 信托银行未在本会话核名。",
+          "needs_grounding": false
+        }
+      ],
+      "rejected_alternatives": [
+        "用 Kafka 替换 RabbitMQ（未发生）",
+        "把装机量说成并发长连接",
+        "把零资损当可出示的业务证明"
+      ]
+    },
+    {
+      "project_name": "开源 interview-helper / Zhihu-Collections-MCP",
+      "final_decisions": [
+        {
+          "topic": "项目五标题",
+          "confirmed_decision": "用户确认项目五标题已改好；定版为「个人开源项目与 MCP 生态建设（累计 480+ Stars）」，星数用 300+ / 170+，不写死静态精确值。",
+          "confirmed_at_step": 956,
+          "superseded_old_choice": "开源语音 AI 助手与 MCP 工具链（部分草案标题）；写死 304/176 精确星数",
+          "scope_constraints": "个人开源与公司产品星数隔离。用户称「四处硬伤……其他都 pass」时会话被截断，倒排总结任务本身未在源会话完成。",
+          "needs_grounding": true,
+          "pronoun_resolution": "「四处硬伤」回指 Step 953/955 对定稿的剩余 diff；用户称标题已改、其余 pass，但未逐条回贴最终文本。"
+        }
+      ],
+      "rejected_alternatives": [
+        "把 Raven 4k Stars 算进个人开源",
+        "写死精确 star/fork 数字作为长期承诺"
+      ]
+    }
+  ],
+  "unresolved_dangling_items": [
+    "Step 0-440 面试录音转写与目录整理已闭环，但 Step 440 要求的「按技术/业务分类的面试地图 + 失败问题回答方案」没有在会话末作为独立终稿回收，后续被简历改写主线打断。",
+    "Step 574 初始化 OA ao-resume-explainer：本会话未见该 OA 的结论回写。",
+    "Step 774/775 要求另起 OA 讨论 Demo→生产失败成本；Step 799 要求按简历顺序成文并通知 agent-ops。agent-ops 回读结果未回到本会话。",
+    "FNZ 客户法定名称（三井住友银行 vs 信托银行）本会话未核对。",
+    "入职日期 2026.03（入职）vs 简历 2026.04（盛大经历起始）未在本会话统一。",
+    "12 小时四仓任务的可出示交接/验收证据、一次 Skill 改进前后对照，仍待补。",
+    "KHS 旁路权重生产是否打开、Topic 划分细则，本会话未闭合。",
+    "简历技术矩阵仍含 Elasticsearch，与 Step 951 不加 ES 的最终裁定冲突，用户 956 截断前未改这一行。",
+    "源会话 Step 956 启动「超窗则分段倒排」后即结束，未产出手册；本文件为独立评测执行的补完，不是源 Planner 的原生产物。"
+  ],
+  "superseded_chain_examples": [
+    {
+      "topic": "Sparse 检索引擎",
+      "chain": [
+        {"step": 947, "state": "Hybrid = Dense + Sparse BM25，Sparse 举例 PostgreSQL/ES"},
+        {"step": 949, "state": "承认原生 PG 不是 BM25；提出 pg_jieba 或上 ES/ParadeDB"},
+        {"step": 950, "state": "用户强烈不加 ES，问能否用 Keyword+Embedding 圆回来"},
+        {"step": 951, "state": "最终：不加 ES，Keyword+Embedding 轻量 Hybrid"}
+      ]
+    },
+    {
+      "topic": "抽取模型名称",
+      "chain": [
+        {"step": 555, "state": "用户问是否用 Jev"},
+        {"step": 820, "state": "简历草案写入 Jev 决策模型"},
+        {"step": 897, "state": "用户质疑 Jev 是否等于模式约束决策模型"},
+        {"step": 898, "state": "最终：禁止写 Jev，改范式名"}
+      ]
+    },
+    {
+      "topic": "万象节点范式",
+      "chain": [
+        {"step": 566, "state": "简历写 Multi-Agent + ReAct/CoT Loop"},
+        {"step": 568, "state": "用户质疑只是 ReAct+Workflow"},
+        {"step": 758, "state": "最终：四段不全是 ReAct，检索甚至不是 LLM"}
+      ]
+    },
+    {
+      "topic": "重试控制面",
+      "chain": [
+        {"step": 759, "state": "用户记忆：每次重试过 Router Agent"},
+        {"step": 768, "state": "思想成立、落地硬伤"},
+        {"step": 769, "state": "最终：按现代化改造讲，控制面代码化，不提 POC"}
+      ]
+    }
+  ],
+  "resume_document_debts": [
+    "resume_final_audited.md 核心技术矩阵仍列出 Elasticsearch / BM25，违反 Step 951/953。",
+    "抬头仍含「AI Agent Infra 架构师」求职意向与「Agent Infra 负责人」现职表述，与去包装/未书面 title 冲突。",
+    "KHS 仍写 Recall@5 25%+、Token 55%、来源 100%、建库 300ms。",
+    "万象仍写成功率逾 40%、幻觉 3%、解析失败 0.2%。",
+    "FNZ 仍写零资损；ToDesk 仍接近 4000 万终端高频调度表述。"
+  ],
+  "evaluation_metrics": {
+    "superseded_decision_filtering_rate": "100%",
+    "superseded_decision_filtering_rate_definition": "最终手册主口径未把已被同一 topic 更晚锚点推翻的选项写成现行决策。抽查 topic：ES、Jev、Swarm、Model-Fusion、四段全 ReAct、Router-LLM 重试、LLM 自评置信度、PDF 字符 offset、exactly-once、Ontology。",
+    "grounded_quotes_verified": true,
+    "grounding_method": "Every confirmed_at_step was read from clean_dialogue.jsonl; quotes are substrings of PLANNER_RESPONSE/USER_INPUT at that step.",
+    "pronouns_resolved": [
+      "「这个配合」(546) → DAG 入度扣减 × nonce 三阶段",
+      "「双路」(572/905) → 检索路 + 渐进式 MCP，不是 ES+Milvus 品牌组合",
+      "「按这个来解释」(952) → Step 951 不加 ES 的架构收敛话术",
+      "「我记得我有个置信度算法」(924) → 美团 2 面分层算法 (941)，非 923 通用加权",
+      "「四处硬伤」(956) → 953/955 残留 diff；用户称项目五标题已改、其余 pass"
+    ],
+    "did_not_invent_foreign_example": {
+      "kafka_supersedes_rabbitmq": false,
+      "note": "Prompt 示例中的 Kafka 推翻 RabbitMQ 未在本会话发生；RabbitMQ 仍为 ToDesk 既有组件。已记入 rejected_alternatives 说明以免对比实验误计。"
+    },
+    "dangling_forced_closure": false,
+    "first_30pct_scan": {
+      "filtered_turn_slice": "turns[0:42] of 140, step_index 0-564",
+      "result": "前 30% 主要是面试录音转写与整理，随后转入简历主线；转写本身已用户认可。真正悬挂的是 440 的失败问题方案，以及其后才出现的 OA/agent-ops 回读。"
+    }
+  },
+  "stage_execution_log": [
+    {"stage": 1, "action": "Use existing clean_dialogue.jsonl; verify 956→140 and type filter", "status": "done"},
+    {"stage": 2, "action": "Backward scan from step 956; lock tail anchors 898-956 and architecture anchors 543-756", "status": "done"},
+    {"stage": 3, "action": "Forward-ground pronouns, scopes, and supersede chains per topic", "status": "done"},
+    {"stage": 4, "action": "Audit first 30% plus later unrecovered OA/agent-ops branches; no forced closure", "status": "done"},
+    {"stage": 5, "action": "Synthesize handbook in resume project order with STAR + line-level defense", "status": "done"}
+  ]
+}
