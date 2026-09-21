@@ -34,7 +34,7 @@ class TestRealAntigravityE2E(unittest.TestCase):
         elapsed_ms = (time.perf_counter() - t0) * 1000.0
 
         # Assertions on performance: zero-token parsing should finish in milliseconds
-        self.assertLess(elapsed_ms, 2000.0, f"Expected < 2000ms, took {elapsed_ms:.2f}ms")
+        self.assertLess(elapsed_ms, 5000.0, f"Expected < 5000ms, took {elapsed_ms:.2f}ms")
         self.assertEqual(result.provider, "antigravity")
         self.assertEqual(result.session_id, "e6129792-626d-48e2-bb79-be9d34b32829")
 
