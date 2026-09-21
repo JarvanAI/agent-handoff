@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "session-distill"
+version = "0.1.0"
+description = "High-fidelity trajectory distillation and A2A handoff engine for Coding Agents."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [
+    { name = "Shenzhou Zhao", email = "jarvanjasonzhao@gmail.com" }
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Build Tools",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = []
+
+[project.scripts]
+session-distill = "session_distill.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/JasonJarvan/session-distill"
+Repository = "https://github.com/JasonJarvan/session-distill"
