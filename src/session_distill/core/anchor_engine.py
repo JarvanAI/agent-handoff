@@ -39,8 +39,11 @@ class AnchorEngine:
 
     # User confirmation patterns
     _USER_CONFIRM_PATTERNS: List[Pattern[str]] = [
-        re.compile(r"^(?:好|好的|可以|没问题|通过|已确认|完成|LGTM|lgtm|proceed|approved|looks good|great|nice job|thanks)[!！\.\s]*$", re.IGNORECASE),
-        re.compile(r"(?:确认通过|验收完成|符合预期|没有问题)", re.IGNORECASE),
+        re.compile(
+            r"^(?:好|好的|可以|没问题|通过|已确认|完成|LGTM|lgtm|proceed|approved|looks good|great|nice job|thanks)[!！\.\s，,、]*(?:完成|通过|可以|没问题|感谢|谢谢)?[!！\.\s]*$",
+            re.IGNORECASE,
+        ),
+        re.compile(r"(?:确认通过|验收完成|符合预期|没有问题|已验证|测试通过)", re.IGNORECASE),
     ]
 
     # File modification tools

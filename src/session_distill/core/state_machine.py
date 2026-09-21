@@ -26,15 +26,37 @@ class DecisionStateMachine:
     # Decision proposal patterns
     _PROPOSAL_PATTERNS: List[Pattern[str]] = [
         # Chinese patterns
-        re.compile(r"(?:采用|使用|选用|确定|改为|切换为|引入|设计|方案|策略)\s*[:：]?\s*([A-Za-z0-9_\u4e00-\u9fa5\-\.]{2,40})", re.IGNORECASE),
-        re.compile(r"(?:架构决策|ADR|核心设计)\s*[:：\-]\s*([A-Za-z0-9_\u4e00-\u9fa5\-\.\s]{2,50})", re.IGNORECASE),
-        re.compile(r"决定\s*(?:采用|使用|选用|实现|遵循)\s*([A-Za-z0-9_\u4e00-\u9fa5\-\.]{2,40})", re.IGNORECASE),
-        re.compile(r"选择\s*([A-Za-z0-9_\u4e00-\u9fa5\-\.]{2,30})\s*(?:作为|而非|而不是)", re.IGNORECASE),
+        re.compile(
+            r"(?:决定采用|确定采用|选用|改为|切换为|引入|决定使用|采用)\s*[:：]?\s*([A-Za-z0-9_\u4e00-\u9fa5\-\.]{2,30})",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"(?:架构决策|ADR|核心设计|技术选型|设计决策)\s*[:：\-]\s*([A-Za-z0-9_\u4e00-\u9fa5\-\.\s]{2,40})",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"选择\s*([A-Za-z0-9_\u4e00-\u9fa5\-\.]{2,25})\s*(?:作为|而非|而不是)",
+            re.IGNORECASE,
+        ),
         # English patterns
-        re.compile(r"(?:decided to|we will use|choose|chosen|adopt|switch to|selected)\s+([a-zA-Z0-9_\-\. ]{2,40})", re.IGNORECASE),
-        re.compile(r"(?:architecture decision|ADR|design decision)\s*[:：\-]\s*([a-zA-Z0-9_\-\. ]{2,50})", re.IGNORECASE),
-        re.compile(r"instead of\s+([a-zA-Z0-9_\-\. ]{2,30}),\s*(?:we will|use|adopt)\s+([a-zA-Z0-9_\-\. ]{2,30})", re.IGNORECASE),
+        re.compile(
+            r"(?:decided to|we will use|choose|chosen|adopt|switch to|selected)\s+([a-zA-Z0-9_\-\. ]{2,30})",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"(?:architecture decision|ADR|design decision)\s*[:：\-]\s*([a-zA-Z0-9_\-\. ]{2,40})",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"instead of\s+([a-zA-Z0-9_\-\. ]{2,25}),\s*(?:we will|use|adopt)\s+([a-zA-Z0-9_\-\. ]{2,25})",
+            re.IGNORECASE,
+        ),
     ]
+
+    _STOP_WORDS: Set[str] = {
+        "一个", "大量", "这个", "整个", "我们", "你们", "他们", "可以", "很多", "一些", "非常",
+        "不仅", "而且", "但是", "然而", "如果", "是否", "以及", "或者", "进行", "实现",
+    }
 
     # Debate / contention patterns
     _DEBATE_PATTERNS: List[Pattern[str]] = [
@@ -92,6 +114,20 @@ class DecisionStateMachine:
                 return s.strip()[:200]
         return "Deterministic architectural selection based on performance and compatibility requirements."
 
+    def _is_valid_decision_phrase(self, text: str) -> bool:
+        clean = text.strip()
+        if len(clean) < 2 or len(clean) > 40:
+            return False
+        if clean.isdigit():
+            return False
+        if clean.startswith(("的", "了", "在", "是", "和", "与", "中", "上", "下", "把", "为", "向", "被", "以")):
+            return False
+        if clean.endswith(("的", "了", "吗", "呢", "吧", "啊", "等", "及", "中")):
+            return False
+        if clean in self._STOP_WORDS:
+            return False
+        return True
+
     def process_turn(self, turn: UnifiedTurn) -> None:
         """Process a single turn and advance decision entity states."""
         content = turn.content.strip()
@@ -129,7 +165,7 @@ class DecisionStateMachine:
                 if not groups:
                     continue
                 decision_text = groups[-1].strip()
-                if len(decision_text) < 2 or decision_text.isdigit():
+                if not self._is_valid_decision_phrase(decision_text):
                     continue
 
                 topic = self._normalize_topic(decision_text)
