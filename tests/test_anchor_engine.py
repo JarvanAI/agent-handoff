@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import unittest
 
-from session_distill.core.anchor_engine import AnchorEngine
-from session_distill.models import (
+from handoff.core.anchor_engine import AnchorEngine
+from handoff.models import (
     AnchorType,
     DecisionEntity,
     DecisionState,

@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import unittest
 
-from session_distill.core.state_machine import DecisionStateMachine
-from session_distill.models import DecisionState, TurnRole, UnifiedTurn
+from handoff.core.state_machine import DecisionStateMachine
+from handoff.models import DecisionState, TurnRole, UnifiedTurn
 
 
 class TestDecisionStateMachine(unittest.TestCase):

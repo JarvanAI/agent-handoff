@@ -8,7 +8,7 @@ import sqlite3
 import tempfile
 import unittest
 
-from session_distill.adapters import (
+from handoff.adapters import (
     AntigravityAdapter,
     ClaudeCodeAdapter,
     CodexAdapter,
@@ -17,7 +17,7 @@ from session_distill.adapters import (
     detect_adapter,
     get_adapter,
 )
-from session_distill.models import TurnRole
+from handoff.models import TurnRole
 
 
 class TestAdapters(unittest.TestCase):

@@ -1,0 +1,3 @@
+[console_scripts]
+handoff = handoff.cli:main
+session-distill = handoff.cli:main

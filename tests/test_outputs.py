@@ -7,7 +7,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from session_distill.models import (
+from handoff.models import (
     AnchorRecord,
     AnchorType,
     AntiPatternRecord,
@@ -17,8 +17,8 @@ from session_distill.models import (
     TurnRole,
     UnifiedTurn,
 )
-from session_distill.outputs.handoff_envelope import HandoffEnvelopeGenerator
-from session_distill.outputs.playbook_generator import PlaybookGenerator
+from handoff.outputs.handoff_envelope import HandoffEnvelopeGenerator
+from handoff.outputs.playbook_generator import PlaybookGenerator
 
 
 class TestOutputs(unittest.TestCase):

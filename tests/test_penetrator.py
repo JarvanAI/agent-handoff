@@ -7,7 +7,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from session_distill.core.penetrator import LogPenetrator
+from handoff.core.penetrator import LogPenetrator
 
 
 class TestLogPenetrator(unittest.TestCase):

@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import unittest
 
-from session_distill.core.noise_filter import NoiseFilter
-from session_distill.models import (
+from handoff.core.noise_filter import NoiseFilter
+from handoff.models import (
     ToolCallRecord,
     ToolResultRecord,
     TurnRole,

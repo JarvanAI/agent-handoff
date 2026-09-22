@@ -8,9 +8,9 @@ import tempfile
 import time
 import unittest
 
-from session_distill.engine import DistillationEngine
-from session_distill.outputs.handoff_envelope import HandoffEnvelopeGenerator
-from session_distill.outputs.playbook_generator import PlaybookGenerator
+from handoff.engine import DistillationEngine
+from handoff.outputs.handoff_envelope import HandoffEnvelopeGenerator
+from handoff.outputs.playbook_generator import PlaybookGenerator
 
 
 class TestRealAntigravityE2E(unittest.TestCase):
@@ -23,7 +23,7 @@ class TestRealAntigravityE2E(unittest.TestCase):
     def tearDown(self) -> None:
         self.tmp.cleanup()
 
-    def test_real_antigravity_session_distillation(self) -> None:
+    def test_real_antigravity_handoffation(self) -> None:
         if not self.REAL_SESSION_PATH.is_dir():
             self.skipTest(f"Real session path not found: {self.REAL_SESSION_PATH}")
 
