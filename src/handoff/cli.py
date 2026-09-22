@@ -20,8 +20,8 @@ from session_distill.outputs.playbook_generator import PlaybookGenerator
 
 def create_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="session-distill",
-        description="Zero-token deterministic multi-agent session distillation engine.",
+        prog="handoff",
+        description="Universal Multi-Agent Handoff Protocol & Trajectory Distillation Engine.",
     )
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 

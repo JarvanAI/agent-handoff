@@ -1,11 +1,14 @@
 ---
-name: session-distill
-description: High-fidelity trajectory distillation and A2A handoff engine. Extracts audit-grade Architecture Decision Records (ADR) and battle-tested playbooks from messy multi-turn Coding Agent sessions (Claude Code, Antigravity, Cursor, Codex, Grok), pruning superseded drafts via reverse-anchored FSM.
+name: handoff
+description: Universal Multi-Agent Handoff Protocol & Trajectory Distillation Engine. Supports both sender-side online handoff envelope generation and receiver-side offline session distillation (session-distill) across Claude Code, Antigravity, Cursor, Codex, and Grok.
 ---
 
-# session-distill
+# handoff
 
-A zero-token, deterministic trajectory distillation tool that turns chaotic multi-hundred-turn Coding Agent sessions into audit-grade Architecture Decision Records (ADRs), defensive interview/review playbooks, and ultra-low-token A2A handoff envelopes.
+A universal, zero-token, deterministic Multi-Agent Handoff Protocol and trajectory distillation engine.
+
+- **Sender Mode (`handoff send / create`)**: Formats zero-loss, minimal-token context handoff envelopes for downstream agents.
+- **Receiver Mode (`handoff distill` / `session-distill`)**: Distills chaotic multi-hundred-turn Coding Agent sessions into audit-grade Architecture Decision Records (ADRs) and battle-tested playbooks.
 
 ## Supported Platforms
 - **Antigravity** (`~/.gemini/antigravity-cli/brain/<id>/`)
@@ -17,16 +20,16 @@ A zero-token, deterministic trajectory distillation tool that turns chaotic mult
 ## CLI Usage
 
 ```bash
-# Run distillation on Antigravity session
-python3 -m session_distill.cli run \
+# 1. Distill an Antigravity session (session-distill mode)
+handoff run \
   --from antigravity \
   --session <session_id> \
   --output-playbook ./playbook.md \
   --output-handoff ./handoff_envelope.json
 
-# Run distillation on Claude Code JSONL file
-python3 -m session_distill.cli run \
-  --from claude-code \
-  --file ~/.claude/projects/my-project/session.jsonl \
-  --output-playbook ./playbook.md
+# 2. Inspect session decisions quickly
+handoff inspect <session_id> --from antigravity
+
+# 3. Backward-compatible alias
+session-distill inspect <session_id> --from antigravity
 ```

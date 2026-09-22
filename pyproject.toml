@@ -3,9 +3,9 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "session-distill"
+name = "handoff"
 version = "0.1.0"
-description = "High-fidelity trajectory distillation and A2A handoff engine for Coding Agents."
+description = "Universal Multi-Agent Handoff Protocol & Trajectory Distillation Engine."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "Apache-2.0" }
@@ -22,8 +22,9 @@ classifiers = [
 dependencies = []
 
 [project.scripts]
-session-distill = "session_distill.cli:main"
+handoff = "handoff.cli:main"
+session-distill = "handoff.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/JasonJarvan/session-distill"
-Repository = "https://github.com/JasonJarvan/session-distill"
+Homepage = "https://github.com/JasonJarvan/handoff"
+Repository = "https://github.com/JasonJarvan/handoff"
