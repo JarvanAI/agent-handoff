@@ -12,7 +12,7 @@ from __future__ import annotations
 import re
 from typing import Any, Dict, List, Pattern, Set, Tuple
 
-from session_distill.models import ToolCallRecord, ToolResultRecord, TurnRole, UnifiedTurn
+from handoff.models import ToolCallRecord, ToolResultRecord, TurnRole, UnifiedTurn
 
 
 class NoiseFilter:

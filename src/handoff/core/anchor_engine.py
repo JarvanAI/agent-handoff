@@ -15,7 +15,7 @@ from __future__ import annotations
 import re
 from typing import Any, Dict, List, Optional, Pattern, Set, Tuple
 
-from session_distill.models import (
+from handoff.models import (
     AnchorRecord,
     AnchorType,
     DecisionEntity,

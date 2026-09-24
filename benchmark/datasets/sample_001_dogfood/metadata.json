@@ -1,0 +1,18 @@
+{
+  "sample_id": "SAMPLE-001-ANTIGRAVITY-DOGFOOD",
+  "name": "Dogfooding Session e6129792 (Antigravity Architecture & Hybrid Search)",
+  "provider": "antigravity",
+  "source_session_id": "e6129792-626d-48e2-bb79-be9d34b32829",
+  "raw_turns_count": 962,
+  "raw_file_size_bytes": 5242880,
+  "estimated_raw_tokens": 420000,
+  "difficulty": "Hard",
+  "features": [
+    "long_trajectory_960_turns",
+    "discarded_temporal_hypothesis_step_555",
+    "superseded_storage_architecture_step_950",
+    "deep_log_truncation_confidence_formula",
+    "terminal_channel_isolation_ptys"
+  ],
+  "domain": "Software Architecture, Agent Orchestration, Vector Search"
+}

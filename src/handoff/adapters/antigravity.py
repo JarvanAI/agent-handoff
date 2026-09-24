@@ -10,9 +10,9 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
-from session_distill.adapters.base import BaseSessionAdapter
-from session_distill.core.penetrator import LogPenetrator
-from session_distill.models import (
+from handoff.adapters.base import BaseSessionAdapter
+from handoff.core.penetrator import LogPenetrator
+from handoff.models import (
     ToolCallRecord,
     ToolResultRecord,
     TurnRole,
@@ -74,8 +74,9 @@ class AntigravityAdapter(BaseSessionAdapter):
         last_assistant_turn: Optional[UnifiedTurn] = None
 
         for idx, rec in enumerate(records):
+            was_truncated = bool(rec.get("truncated_fields"))
             # Restore truncated fields if penetrator is active
-            if penetrator and rec.get("truncated_fields"):
+            if penetrator and was_truncated:
                 rec = penetrator.penetrate_record(rec, line_no=idx)
 
             step_idx = rec.get("step_index", idx)
@@ -104,6 +105,8 @@ class AntigravityAdapter(BaseSessionAdapter):
                 "type": turn_type,
                 "status": status,
             }
+            if was_truncated:
+                metadata["penetrated"] = True
             if "thinking" in rec and rec["thinking"]:
                 metadata["thinking"] = rec["thinking"]
 

@@ -5,12 +5,12 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Dict, Optional, Type, Union
 
-from session_distill.adapters.antigravity import AntigravityAdapter
-from session_distill.adapters.base import BaseSessionAdapter
-from session_distill.adapters.claude_code import ClaudeCodeAdapter
-from session_distill.adapters.codex import CodexAdapter
-from session_distill.adapters.cursor import CursorAdapter
-from session_distill.adapters.grok import GrokAdapter
+from handoff.adapters.antigravity import AntigravityAdapter
+from handoff.adapters.base import BaseSessionAdapter
+from handoff.adapters.claude_code import ClaudeCodeAdapter
+from handoff.adapters.codex import CodexAdapter
+from handoff.adapters.cursor import CursorAdapter
+from handoff.adapters.grok import GrokAdapter
 
 _ADAPTER_REGISTRY: Dict[str, Type[BaseSessionAdapter]] = {
     "antigravity": AntigravityAdapter,

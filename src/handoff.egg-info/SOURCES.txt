@@ -43,3 +43,10 @@ src/session_distill/core/state_machine.py
 src/session_distill/outputs/__init__.py
 src/session_distill/outputs/handoff_envelope.py
 src/session_distill/outputs/playbook_generator.py
+tests/test_adapters.py
+tests/test_anchor_engine.py
+tests/test_noise_filter.py
+tests/test_outputs.py
+tests/test_penetrator.py
+tests/test_real_antigravity_e2e.py
+tests/test_state_machine.py

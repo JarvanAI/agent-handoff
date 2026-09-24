@@ -1,9 +1,9 @@
 """Core engine components for session distillation."""
 
-from session_distill.core.anchor_engine import AnchorEngine
-from session_distill.core.noise_filter import NoiseFilter
-from session_distill.core.penetrator import LogPenetrator
-from session_distill.core.state_machine import DecisionStateMachine
+from handoff.core.anchor_engine import AnchorEngine
+from handoff.core.noise_filter import NoiseFilter
+from handoff.core.penetrator import LogPenetrator
+from handoff.core.state_machine import DecisionStateMachine
 
 __all__ = [
     "AnchorEngine",

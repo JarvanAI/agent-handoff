@@ -11,7 +11,7 @@ from __future__ import annotations
 import re
 from typing import Any, Dict, List, Optional, Pattern, Set, Tuple
 
-from session_distill.models import (
+from handoff.models import (
     AntiPatternRecord,
     DecisionEntity,
     DecisionState,
@@ -31,7 +31,7 @@ class DecisionStateMachine:
             re.IGNORECASE,
         ),
         re.compile(
-            r"(?:架构决策|ADR|核心设计|技术选型|设计决策)\s*[:：\-]\s*([A-Za-z0-9_\u4e00-\u9fa5\-\.\s]{2,40})",
+            r"(?:架构决策|ADR|核心设计|技术选型|设计决策)\s*[:：\-]\s*([A-Za-z0-9_\u4e00-\u9fa5\-\.]{2,35})",
             re.IGNORECASE,
         ),
         re.compile(
@@ -66,8 +66,18 @@ class DecisionStateMachine:
 
     # Superseding / Pivot patterns
     _SUPERSEDE_PATTERNS: List[Pattern[str]] = [
-        re.compile(r"(?:放弃|废弃|弃用|不再使用|淘汰|推翻|supersede|deprecate|abandon|replace|drop)\s*([A-Za-z0-9_\u4e00-\u9fa5\-\.]{2,40})", re.IGNORECASE),
-        re.compile(r"(?:改用|换成|替换为|switch from\s+([^\s]+)\s+to)\s*([A-Za-z0-9_\u4e00-\u9fa5\-\.]{2,40})", re.IGNORECASE),
+        re.compile(
+            r"(?:放弃|废弃|弃用|不再使用|淘汰|推翻|排除|否决|不采用|不再考虑|千万别加|坚决不要加|不要加|别加|不加|砍掉|避免|supersede|deprecate|abandon|replace|drop|reject|avoid)\s*[:：]?\s*([A-Za-z0-9_\u4e00-\u9fa5\-\.]{2,30})",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"(?:改用|换成|替换为|switch from\s+([^\s]+)\s+to)\s*([A-Za-z0-9_\u4e00-\u9fa5\-\.]{2,30})",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"(?:(?:未经定义|未定义|概念错误|术语错误|不存在|不可行).*?[\s“\"\'\`]+)([A-Za-z0-9_\u4e00-\u9fa5\-\.]{2,30})[”\"\'\`]",
+            re.IGNORECASE,
+        ),
     ]
 
     # Acceptance / Confirmation patterns
@@ -136,27 +146,33 @@ class DecisionStateMachine:
 
         # 1. Detect explicit superseding / deprecation
         for pat in self._SUPERSEDE_PATTERNS:
-            match = pat.search(content)
-            if match:
+            for match in pat.finditer(content):
                 groups = [g for g in match.groups() if g]
                 if groups:
-                    target = self._normalize_topic(groups[0])
+                    target_phrase = groups[0].strip()
+                    if not self._is_valid_decision_phrase(target_phrase):
+                        continue
+                    target = self._normalize_topic(target_phrase)
+                    replacement = groups[1].strip() if len(groups) > 1 else "Newer architectural design"
+
                     if target in self._topic_index:
                         old_id = self._topic_index[target]
                         old_entity = self._entities.get(old_id)
                         if old_entity and old_entity.state not in (DecisionState.SUPERSEDED, DecisionState.REJECTED):
                             old_entity.state = DecisionState.SUPERSEDED
-                            # Record anti-pattern
-                            replacement = groups[1] if len(groups) > 1 else "Newer architectural design"
-                            self._anti_patterns.append(
-                                AntiPatternRecord(
-                                    topic=old_entity.topic,
-                                    abandoned_proposal=old_entity.decision,
-                                    pitfall_reason=f"Superseded during turn {turn.turn_id}: {content[:120]}",
-                                    recommended_alternative=replacement,
-                                    turn_id=turn.turn_id,
-                                )
+                            target_phrase = old_entity.decision
+
+                    # Record anti-pattern without duplicates
+                    if not any(ap.abandoned_proposal == target_phrase for ap in self._anti_patterns):
+                        self._anti_patterns.append(
+                            AntiPatternRecord(
+                                topic=target,
+                                abandoned_proposal=target_phrase,
+                                pitfall_reason=f"Superseded or rejected during turn {turn.turn_id}: {content[:120]}",
+                                recommended_alternative=replacement,
+                                turn_id=turn.turn_id,
                             )
+                        )
 
         # 2. Detect proposals
         for pat in self._PROPOSAL_PATTERNS:

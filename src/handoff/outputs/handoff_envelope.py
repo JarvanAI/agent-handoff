@@ -10,10 +10,11 @@ from __future__ import annotations
 from datetime import datetime, timezone
 import json
 from pathlib import Path
+import re
 from typing import Any, Dict, List, Optional, Union
 import uuid
 
-from session_distill.models import (
+from handoff.models import (
     AnchorRecord,
     AntiPatternRecord,
     DecisionEntity,
@@ -70,6 +71,14 @@ class HandoffEnvelopeGenerator:
                 (1.0 - len(result.cleaned_turns) / result.raw_turns_count) * 100, 1
             )
 
+        # 4. Recovered Technical Signatures from Penetrated Logs
+        recovered_parameters: List[str] = []
+        for t in result.cleaned_turns:
+            if t.metadata.get("penetrated"):
+                for token in re.findall(r"`([a-zA-Z0-9_\-\.]{3,40})`", t.content):
+                    if token not in recovered_parameters:
+                        recovered_parameters.append(token)
+
         envelope: Dict[str, Any] = {
             "schema_version": self.schema_version,
             "envelope_id": envelope_id,
@@ -88,6 +97,7 @@ class HandoffEnvelopeGenerator:
             },
             "anti_patterns": anti_patterns,
             "anchors": anchors,
+            "penetrated_recoveries": recovered_parameters[:500],
             "open_tasks": result.open_tasks,
             "context_digest": {
                 "key_decisions_summary": [d["decision"] for d in active_decisions],

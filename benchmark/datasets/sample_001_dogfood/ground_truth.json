@@ -1,0 +1,58 @@
+{
+  "sample_id": "SAMPLE-001-ANTIGRAVITY-DOGFOOD",
+  "final_decisions": [
+    {
+      "id": "DEC-01",
+      "concept": "DAG 拓扑流编排",
+      "keywords": ["dag", "拓扑", "topology", "多智能体", "编排"],
+      "weight": 3.0,
+      "description": "Adopt DAG topology flow and SDD/TDD規约 for Agent Infra and multi-agent coordination."
+    },
+    {
+      "id": "DEC-02",
+      "concept": "PTY 终端隔离通道",
+      "keywords": ["pty", "terminal", "隔离", "通道", "channel"],
+      "weight": 2.0,
+      "description": "Isolate subagent executions using independent PTY terminal channels."
+    },
+    {
+      "id": "DEC-03",
+      "concept": "PostgreSQL 关键词与语义双路召回",
+      "keywords": ["postgresql", "pg", "keyword", "embedding", "双路召回"],
+      "weight": 4.0,
+      "description": "Adopt PostgreSQL + Milvus / rank_bm25 dual-channel retrieval over standalone Elasticsearch."
+    },
+    {
+      "id": "DEC-04",
+      "concept": "大文件切片建库与",
+      "keywords": ["切片", "建库", "大文件切片建库与", "抽取"],
+      "weight": 3.0,
+      "description": "Implement file slicing, knowledge extraction and progressive disclosure."
+    }
+  ],
+  "anti_patterns": [
+    {
+      "id": "AP-01",
+      "concept": "Jev 决策模型",
+      "keywords": ["jev", "jev决策模型", "jev模型"],
+      "rejected_in_turn": 825,
+      "reason": "Undefined / invalid model jargon flagged and rejected during audit."
+    },
+    {
+      "id": "AP-02",
+      "concept": "Elasticsearch 臃肿中间件",
+      "keywords": ["elasticsearch", "es", "千万别加 es", "砍掉臃肿的 es"],
+      "rejected_in_turn": 951,
+      "reason": "Superseded in favor of PG + rank_bm25 to cut TCO and JVM memory overhead in private deployments."
+    }
+  ],
+  "critical_truncations": [
+    {
+      "id": "TR-01",
+      "signature": "rank_bm25",
+      "field": "retrieval_library",
+      "turn_id": 951,
+      "description": "rank_bm25 library mentioned in long technical trade-off response; restored via transcript_full."
+    }
+  ]
+}

@@ -11,8 +11,8 @@ from pathlib import Path
 import sqlite3
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-from session_distill.adapters.base import BaseSessionAdapter
-from session_distill.models import (
+from handoff.adapters.base import BaseSessionAdapter
+from handoff.models import (
     ToolCallRecord,
     ToolResultRecord,
     TurnRole,

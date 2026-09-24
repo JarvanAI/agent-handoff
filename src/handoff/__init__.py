@@ -5,7 +5,7 @@ Pure-Python pipeline converting high-noise Agent trajectories into:
 2. Machine-readable Zero-Loss A2A Handoff Envelopes
 """
 
-from session_distill.adapters import (
+from handoff.adapters import (
     AntigravityAdapter,
     BaseSessionAdapter,
     ClaudeCodeAdapter,
@@ -15,8 +15,8 @@ from session_distill.adapters import (
     detect_adapter,
     get_adapter,
 )
-from session_distill.engine import DistillationEngine
-from session_distill.models import (
+from handoff.engine import DistillationEngine
+from handoff.models import (
     AnchorRecord,
     AnchorType,
     AntiPatternRecord,
@@ -28,7 +28,7 @@ from session_distill.models import (
     TurnRole,
     UnifiedTurn,
 )
-from session_distill.outputs import HandoffEnvelopeGenerator, PlaybookGenerator
+from handoff.outputs import HandoffEnvelopeGenerator, PlaybookGenerator
 
 __version__ = "0.1.0"
 

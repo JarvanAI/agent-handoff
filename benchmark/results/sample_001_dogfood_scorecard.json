@@ -1,0 +1,85 @@
+{
+  "sample": "sample_001_dogfood",
+  "scorecards": [
+    {
+      "strategy_name": "Raw Full History",
+      "sample_id": "SAMPLE-001-ANTIGRAVITY-DOGFOOD",
+      "input_tokens": 420000,
+      "output_tokens": 420000,
+      "compression_ratio": 1.0,
+      "cer": 0.44,
+      "wfdr": 1.0,
+      "nkr": 0.0,
+      "hard_shr": 0.5,
+      "tra": 0.0,
+      "tcsr": 0.92,
+      "raw_metrics": {}
+    },
+    {
+      "strategy_name": "Sliding Pager (Last 50)",
+      "sample_id": "SAMPLE-001-ANTIGRAVITY-DOGFOOD",
+      "input_tokens": 420000,
+      "output_tokens": 22000,
+      "compression_ratio": 0.0524,
+      "cer": 3.82,
+      "wfdr": 0.25,
+      "nkr": 0.0,
+      "hard_shr": 0.0,
+      "tra": 0.0,
+      "tcsr": 0.42,
+      "raw_metrics": {}
+    },
+    {
+      "strategy_name": "Naive LLM Summarizer",
+      "sample_id": "SAMPLE-001-ANTIGRAVITY-DOGFOOD",
+      "input_tokens": 420000,
+      "output_tokens": 14500,
+      "compression_ratio": 0.0345,
+      "cer": 9.38,
+      "wfdr": 0.62,
+      "nkr": 0.25,
+      "hard_shr": 0.5,
+      "tra": 0.0,
+      "tcsr": 0.68,
+      "raw_metrics": {}
+    },
+    {
+      "strategy_name": "Handoff Distill (Ours)",
+      "sample_id": "SAMPLE-001-ANTIGRAVITY-DOGFOOD",
+      "input_tokens": 420000,
+      "output_tokens": 48824,
+      "compression_ratio": 0.1162,
+      "cer": 3.85,
+      "wfdr": 1.0,
+      "nkr": 1.0,
+      "hard_shr": 0.0,
+      "tra": 1.0,
+      "tcsr": 0.94,
+      "raw_metrics": {
+        "duration_ms": 1348.58,
+        "raw_turns": 999,
+        "cleaned_turns": 995,
+        "decisions_count": 96,
+        "anchors_count": 2,
+        "wfdr_details": {
+          "matched": [
+            "DEC-01",
+            "DEC-02",
+            "DEC-03",
+            "DEC-04"
+          ],
+          "unmatched": [],
+          "total_weight": 12.0
+        },
+        "nkr_details": {
+          "flagged": [
+            "AP-01",
+            "AP-02"
+          ],
+          "missed": [],
+          "total": 2
+        }
+      }
+    }
+  ]
+}

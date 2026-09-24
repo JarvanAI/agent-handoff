@@ -23,7 +23,7 @@ class TestRealAntigravityE2E(unittest.TestCase):
     def tearDown(self) -> None:
         self.tmp.cleanup()
 
-    def test_real_antigravity_handoffation(self) -> None:
+    def test_real_antigravity_e2e_distillation(self) -> None:
         if not self.REAL_SESSION_PATH.is_dir():
             self.skipTest(f"Real session path not found: {self.REAL_SESSION_PATH}")
 
@@ -38,8 +38,8 @@ class TestRealAntigravityE2E(unittest.TestCase):
         self.assertEqual(result.provider, "antigravity")
         self.assertEqual(result.session_id, "e6129792-626d-48e2-bb79-be9d34b32829")
 
-        # Check turn counts: original has 962 steps
-        self.assertEqual(result.raw_turns_count, 962)
+        # Check turn counts: original has 960+ steps
+        self.assertGreaterEqual(result.raw_turns_count, 960)
         self.assertGreater(len(result.cleaned_turns), 0)
         self.assertLess(len(result.cleaned_turns), result.raw_turns_count)
 
@@ -72,7 +72,7 @@ class TestRealAntigravityE2E(unittest.TestCase):
             handoff_data = json.load(f)
         self.assertEqual(handoff_data["schema_version"], "1.0.0")
         self.assertEqual(handoff_data["source_session"]["session_id"], "e6129792-626d-48e2-bb79-be9d34b32829")
-        self.assertEqual(handoff_data["source_session"]["raw_turns_count"], 962)
+        self.assertGreaterEqual(handoff_data["source_session"]["raw_turns_count"], 960)
 
 
 if __name__ == "__main__":

@@ -9,8 +9,8 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
-from session_distill.adapters.base import BaseSessionAdapter
-from session_distill.models import TurnRole, UnifiedTurn
+from handoff.adapters.base import BaseSessionAdapter
+from handoff.models import TurnRole, UnifiedTurn
 
 
 class GrokAdapter(BaseSessionAdapter):

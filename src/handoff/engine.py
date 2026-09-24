@@ -6,11 +6,11 @@ from pathlib import Path
 import time
 from typing import Any, Dict, List, Optional, Union
 
-from session_distill.adapters import BaseSessionAdapter, detect_adapter, get_adapter
-from session_distill.core.anchor_engine import AnchorEngine
-from session_distill.core.noise_filter import NoiseFilter
-from session_distill.core.state_machine import DecisionStateMachine
-from session_distill.models import DistillationResult, UnifiedTurn
+from handoff.adapters import BaseSessionAdapter, detect_adapter, get_adapter
+from handoff.core.anchor_engine import AnchorEngine
+from handoff.core.noise_filter import NoiseFilter
+from handoff.core.state_machine import DecisionStateMachine
+from handoff.models import DistillationResult, UnifiedTurn
 
 
 class DistillationEngine:

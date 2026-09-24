@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
-from session_distill.models import (
+from handoff.models import (
     AnchorRecord,
     AnchorType,
     AntiPatternRecord,

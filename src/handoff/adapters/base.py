@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
-from session_distill.models import UnifiedTurn
+from handoff.models import UnifiedTurn
 
 
 class BaseSessionAdapter(ABC):
