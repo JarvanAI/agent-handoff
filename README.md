@@ -23,9 +23,10 @@ It edited 47 files, failed 12 tests, pivoted across 3 database schemas, and fina
 
 ### 💡 The Solution: handoff
 
-`handoff` provides a dual-mode universal protocol:
-- **Sender Mode (`handoff send / create`)**: Formats zero-loss, minimal-token context handoff envelopes (<1200 chars) for downstream agents.
-- **Receiver Mode (`handoff distill` / `session-distill`)**: Retroactively extracts the true decision spine from existing long sessions using **Bi-directional Anchoring + Finite State Machine (FSM) Pruning**.
+Agents call this as a Skill plus a CLI. Three commands match three situations:
+- **`session-handoff`**: the current session writes a short handoff for the next session.
+- **`session-distill`**: the next session analyzes one known previous session (bidirectional anchoring and latest-wins pruning).
+- **`session-search`**: find which past session matches a query. agentsview is used when it is installed.
 
 ```text
 [Raw 500k-token Agent Session (Claude Code / Antigravity / Cursor / Codex / Grok)]
@@ -71,24 +72,21 @@ It edited 47 files, failed 12 tests, pivoted across 3 database schemas, and fina
 # Install locally
 pip install -e .
 
-# 1. Distill an Antigravity session (session-distill mode)
-handoff run \
+# 1. Previous session writes a handoff. This does not read an old transcript.
+session-handoff --summary "PG stays; do not revive ES."
+
+# 2. Next session analyzes one known session and may write files.
+session-distill \
   --from antigravity \
   --session e6129792-626d-48e2-bb79-be9d34b32829 \
   --output-playbook ./playbook.md \
   --output-handoff ./handoff.json
 
-# 2. Inspect session decisions quickly
-handoff inspect e6129792-626d-48e2-bb79-be9d34b32829 --from antigravity
+# 3. Same analysis, terminal only.
+session-distill --inspect e6129792-626d-48e2-bb79-be9d34b32829 --from antigravity
 
-# 3. Distill a Claude Code JSONL log
-handoff run \
-  --from claude-code \
-  --file ~/.claude/projects/my-project/session.jsonl \
-  --output-playbook ./docs/adr/ADR-001.md
-
-# 4. Backward-compatible command also supported
-session-distill inspect e6129792-626d-48e2-bb79-be9d34b32829 --from antigravity
+# 4. Find a session, then distill that id.
+session-search "BaseSessionAdapter" --json
 ```
 
 ---

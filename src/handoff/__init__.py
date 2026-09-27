@@ -1,58 +1,24 @@
-"""Session Distill: Zero-token deterministic multi-agent session distillation package.
+"""Backward-compatible alias for :mod:`agent_handoff`.
 
-Pure-Python pipeline converting high-noise Agent trajectories into:
-1. Human-readable Markdown ADR & Defense Playbooks
-2. Machine-readable Zero-Loss A2A Handoff Envelopes
+Historical imports (``import handoff``, ``handoff.engine``, ``handoff.core``)
+keep working after the package rename.
 """
 
-from handoff.adapters import (
-    AntigravityAdapter,
-    BaseSessionAdapter,
-    ClaudeCodeAdapter,
-    CodexAdapter,
-    CursorAdapter,
-    GrokAdapter,
-    detect_adapter,
-    get_adapter,
-)
-from handoff.engine import DistillationEngine
-from handoff.models import (
-    AnchorRecord,
-    AnchorType,
-    AntiPatternRecord,
-    DecisionEntity,
-    DecisionState,
-    DistillationResult,
-    ToolCallRecord,
-    ToolResultRecord,
-    TurnRole,
-    UnifiedTurn,
-)
-from handoff.outputs import HandoffEnvelopeGenerator, PlaybookGenerator
+from __future__ import annotations
 
-__version__ = "0.1.0"
+from agent_handoff.compat import install_alias
 
-__all__ = [
-    "AnchorRecord",
-    "AnchorType",
-    "AntiPatternRecord",
-    "AntigravityAdapter",
-    "BaseSessionAdapter",
-    "ClaudeCodeAdapter",
-    "CodexAdapter",
-    "CursorAdapter",
-    "DecisionEntity",
-    "DecisionState",
-    "DistillationEngine",
-    "DistillationResult",
-    "GrokAdapter",
-    "HandoffEnvelopeGenerator",
-    "PlaybookGenerator",
-    "ToolCallRecord",
-    "ToolResultRecord",
-    "TurnRole",
-    "UnifiedTurn",
-    "__version__",
-    "detect_adapter",
-    "get_adapter",
-]
+install_alias("handoff")
+
+import agent_handoff as _agent_handoff
+from agent_handoff import *  # noqa: F401,F403
+from agent_handoff import __all__ as __all__
+from agent_handoff import __version__ as __version__
+
+
+def __getattr__(name: str):
+    return getattr(_agent_handoff, name)
+
+
+def __dir__() -> list[str]:
+    return sorted(set(globals()) | set(__all__))
