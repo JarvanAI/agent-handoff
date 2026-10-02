@@ -9,6 +9,7 @@ import time
 import unittest
 
 from handoff.engine import DistillationEngine
+from handoff.models import TurnRole
 from handoff.outputs.handoff_envelope import HandoffEnvelopeGenerator
 from handoff.outputs.playbook_generator import PlaybookGenerator
 
@@ -43,11 +44,15 @@ class TestRealAntigravityE2E(unittest.TestCase):
         self.assertGreater(len(result.cleaned_turns), 0)
         self.assertLess(len(result.cleaned_turns), result.raw_turns_count)
 
-        # Check penetration: verify some previously truncated contents were restored
-        penetrated_turns = [
-            t for t in result.cleaned_turns if t.metadata.get("step_index") in (2, 4, 18, 20, 26)
+        # Crop keeps user text and public replies. Tool dumps stay out.
+        for turn in result.cleaned_turns:
+            self.assertIn(turn.role, (TurnRole.USER, TurnRole.ASSISTANT))
+            self.assertEqual(turn.tool_calls, [])
+            self.assertEqual(turn.tool_results, [])
+        penetrated_public = [
+            turn for turn in result.cleaned_turns if turn.metadata.get("penetrated")
         ]
-        self.assertTrue(len(penetrated_turns) > 0)
+        self.assertGreater(len(penetrated_public), 0)
 
         # Generate outputs
         playbook_path = self.tmp_dir / "playbook.md"

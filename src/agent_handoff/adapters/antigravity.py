@@ -125,6 +125,28 @@ class AntigravityAdapter(BaseSessionAdapter):
                 unified_turns.append(turn)
                 last_assistant_turn = None
 
+            elif turn_type == "GENERIC":
+                # Tool output is often tagged source=MODEL. That is not a public reply.
+                role = TurnRole.TOOL
+                tr = ToolResultRecord(
+                    tool_name=last_assistant_turn.tool_calls[-1].tool_name if (last_assistant_turn and last_assistant_turn.tool_calls) else None,
+                    content=content,
+                    status=status,
+                    call_id=last_assistant_turn.tool_calls[-1].call_id if (last_assistant_turn and last_assistant_turn.tool_calls) else None,
+                )
+                if last_assistant_turn is not None and not last_assistant_turn.tool_results:
+                    last_assistant_turn.tool_results.append(tr)
+                turn = UnifiedTurn(
+                    turn_id=f"step_{step_idx}",
+                    session_id=session_id,
+                    timestamp=created_at,
+                    role=role,
+                    content=content,
+                    tool_results=[tr],
+                    metadata=metadata,
+                )
+                unified_turns.append(turn)
+
             elif turn_type == "PLANNER_RESPONSE" or source == "MODEL":
                 role = TurnRole.ASSISTANT
                 turn = UnifiedTurn(
@@ -139,9 +161,8 @@ class AntigravityAdapter(BaseSessionAdapter):
                 unified_turns.append(turn)
                 last_assistant_turn = turn
 
-            elif turn_type in ("GENERIC", "ERROR_MESSAGE") or source == "SYSTEM":
-                # Tool execution result or system message
-                role = TurnRole.TOOL if turn_type == "GENERIC" else TurnRole.SYSTEM
+            elif turn_type == "ERROR_MESSAGE" or source == "SYSTEM":
+                role = TurnRole.SYSTEM
                 tr = ToolResultRecord(
                     tool_name=last_assistant_turn.tool_calls[-1].tool_name if (last_assistant_turn and last_assistant_turn.tool_calls) else None,
                     content=content,

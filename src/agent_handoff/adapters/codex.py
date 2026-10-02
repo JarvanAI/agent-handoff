@@ -151,6 +151,12 @@ class CodexAdapter(BaseSessionAdapter):
                 event_type = payload.get("type")
                 if event_type == "user_message":
                     text = str(payload.get("message", ""))
+                    # response_item already recorded this user text.
+                    if any(
+                        turn.role == TurnRole.USER and turn.content == text
+                        for turn in unified_turns
+                    ):
+                        continue
                     turn_counter += 1
                     turn = UnifiedTurn(
                         turn_id=f"codex_turn_{turn_counter}",

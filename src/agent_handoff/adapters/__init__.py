@@ -65,6 +65,15 @@ def detect_adapter(path_or_id: Union[str, Path]) -> BaseSessionAdapter:
     if brain_dir.is_dir():
         return AntigravityAdapter()
 
+    # Live Grok session id under ~/.grok/sessions/<cwd>/<id>/
+    if not p.exists():
+        try:
+            GrokAdapter()._resolve_file(path_or_id)
+        except FileNotFoundError:
+            pass
+        else:
+            return GrokAdapter()
+
     # Default fallback to Antigravity if ambiguous UUID
     return AntigravityAdapter()
 

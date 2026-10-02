@@ -67,6 +67,7 @@ class TestAdapters(unittest.TestCase):
         self.assertEqual(turns[0].role, TurnRole.USER)
         self.assertEqual(turns[1].role, TurnRole.ASSISTANT)
         self.assertEqual(turns[1].tool_calls[0].tool_name, "view_file")
+        self.assertEqual(turns[2].role, TurnRole.TOOL)
 
     def test_claude_code_adapter(self) -> None:
         file_path = self.tmp_dir / "claude_session.jsonl"
@@ -93,6 +94,8 @@ class TestAdapters(unittest.TestCase):
             {"type": "session_meta", "payload": {"id": "codex-123"}},
             {"type": "response_item", "timestamp": "2026-03-11T04:24:18Z", "payload": {"type": "message", "role": "user", "content": [{"type": "input_text", "text": "Hello Codex"}]}},
             {"type": "response_item", "timestamp": "2026-03-11T04:24:19Z", "payload": {"type": "message", "role": "assistant", "content": [{"type": "output_text", "text": "Hi there!"}]}},
+            {"type": "event_msg", "timestamp": "2026-03-11T04:24:19Z", "payload": {"type": "user_message", "message": "Hello Codex"}},
+            {"type": "response_item", "timestamp": "2026-03-11T04:24:20Z", "payload": {"type": "reasoning", "content": "private plan", "encrypted_content": "cipher"}},
         ]
         with open(file_path, "w", encoding="utf-8") as f:
             for r in rows:
@@ -105,6 +108,7 @@ class TestAdapters(unittest.TestCase):
         self.assertEqual(turns[0].content, "Hello Codex")
         self.assertEqual(turns[1].role, TurnRole.ASSISTANT)
         self.assertEqual(turns[1].content, "Hi there!")
+        self.assertNotIn("private plan", "\n".join(turn.content for turn in turns))
 
     def test_cursor_adapter(self) -> None:
         cursor_dir = self.tmp_dir / "cursor_session"
@@ -146,6 +150,25 @@ class TestAdapters(unittest.TestCase):
         self.assertEqual(turns[0].role, TurnRole.USER)
         self.assertEqual(turns[1].role, TurnRole.ASSISTANT)
         self.assertIn("300,000", turns[1].content)
+
+    def test_grok_live_chat_history_resolves_session_id(self) -> None:
+        session_dir = self.tmp_dir / "01a0fc05-live"
+        session_dir.mkdir()
+        history = session_dir / "chat_history.jsonl"
+        history.write_text(
+            json.dumps(
+                {
+                    "type": "user",
+                    "content": [{"type": "text", "text": "<user_query>继续这件事</user_query>"}],
+                }
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        turns = GrokAdapter().parse_trajectory(session_dir)
+        self.assertEqual(len(turns), 1)
+        self.assertEqual(turns[0].session_id, "01a0fc05-live")
+        self.assertIn("继续这件事", turns[0].content)
 
 
 if __name__ == "__main__":

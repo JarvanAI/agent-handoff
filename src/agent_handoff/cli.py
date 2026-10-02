@@ -28,6 +28,7 @@ def _detect_prog() -> str:
         "session",
         "session-handoff",
         "session-distill",
+        "session-continue",
         "session-search",
     }:
         return name
@@ -80,7 +81,7 @@ def create_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def _add_distill_arguments(parser: argparse.ArgumentParser, *, with_inspect: bool = False) -> None:
+def _add_source_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--from",
         dest="provider",
@@ -90,6 +91,10 @@ def _add_distill_arguments(parser: argparse.ArgumentParser, *, with_inspect: boo
     parser.add_argument("--session", "-s", help="Session ID or session folder name.")
     parser.add_argument("--file", help="Path to a session transcript or export file.")
     parser.add_argument("--dir", help="Path to a session directory.")
+
+
+def _add_distill_arguments(parser: argparse.ArgumentParser, *, with_inspect: bool = False) -> None:
+    _add_source_arguments(parser)
     parser.add_argument("--output-playbook", "-p", help="Write the human-readable playbook to this path.")
     parser.add_argument("--output-handoff", "-o", help="Write the distill envelope (.json or .yaml) to this path.")
     parser.add_argument("--title", help="Title for the playbook.")
@@ -171,11 +176,73 @@ def format_search_text(envelope) -> str:
     return "\n".join(lines)
 
 
+def _source_target(args: argparse.Namespace) -> Optional[str]:
+    return args.file or args.dir or args.session or getattr(args, "target", None)
+
+
+def _one_line(text: str, limit: int = 180) -> str:
+    compact = " ".join((text or "").split())
+    if len(compact) <= limit:
+        return compact
+    return compact[: limit - 3] + "..."
+
+
+def format_continue(result) -> str:
+    """Render the cropped dialogue. This is the whole session-continue payload."""
+
+    lines = [
+        (
+            f"[session-continue] session={result.session_id} provider={result.provider} "
+            f"raw={result.raw_turns_count} kept={len(result.cleaned_turns)}"
+        ),
+        "",
+    ]
+    for turn in result.cleaned_turns:
+        role = "user" if turn.role.value == "user" else "assistant"
+        lines.append(f"[{role}]")
+        lines.append(turn.content)
+        lines.append("")
+    return "\n".join(lines).rstrip() + "\n"
+
+
+def _print_distill_brief(result) -> None:
+    """Decision lines only. The cropped transcript stays in the child process."""
+
+    for decision in result.decisions:
+        print(
+            f"  * {decision.entity_id} [{decision.state.value}]: "
+            f"{decision.topic} -> {_one_line(decision.decision)}"
+        )
+    for anti in result.anti_patterns:
+        print(
+            f"  [AVOID] {anti.topic}: {_one_line(anti.abandoned_proposal)} "
+            f"-> {_one_line(anti.recommended_alternative)}"
+        )
+    for anchor in result.anchors:
+        print(f"  # Anchor [{anchor.anchor_type.value}]: {_one_line(anchor.description)} ({anchor.turn_id})")
+
+
+def handle_continue(args: argparse.Namespace) -> int:
+    from agent_handoff.engine import DistillationEngine
+
+    target = _source_target(args)
+    if not target:
+        print("Error: Must specify one of --session, --file, or --dir", file=sys.stderr)
+        return 1
+    try:
+        result = DistillationEngine().read_dialogue(target, provider=args.provider)
+    except Exception as exc:
+        print(f"Error during continue: {exc}", file=sys.stderr)
+        return 2
+    sys.stdout.write(format_continue(result))
+    return 0
+
+
 def handle_run(args: argparse.Namespace) -> int:
     from agent_handoff.engine import DistillationEngine
     from agent_handoff.outputs.handoff_envelope import HandoffEnvelopeGenerator
     from agent_handoff.outputs.playbook_generator import PlaybookGenerator
-    target = args.file or args.dir or args.session
+    target = _source_target(args)
     if not target:
         print("Error: Must specify one of --session, --file, or --dir", file=sys.stderr)
         return 1
@@ -208,15 +275,7 @@ def handle_run(args: argparse.Namespace) -> int:
         out_path = envelope_gen.write_to_file(result, args.output_handoff)
         print(f"  Handoff envelope written to: {out_path}")
 
-    if args.verbose:
-        print("\n--- Decision Entities ---")
-        for d in result.decisions:
-            print(f"  [{d.entity_id}] ({d.state.value}) {d.topic}: {d.decision}")
-        if result.anti_patterns:
-            print("\n--- Anti-patterns ---")
-            for ap in result.anti_patterns:
-                print(f"  [AVOID] {ap.topic}: {ap.abandoned_proposal} -> {ap.recommended_alternative}")
-
+    _print_distill_brief(result)
     return 0
 
 
@@ -241,10 +300,7 @@ def handle_inspect(args: argparse.Namespace) -> int:
     print(f"  Anchors:    {len(result.anchors)}")
     print(f"  Anti-Patterns: {len(result.anti_patterns)}")
     print("========================================")
-    for d in result.decisions:
-        print(f"  * {d.entity_id} [{d.state.value}]: {d.topic} -> {d.decision}")
-    for a in result.anchors:
-        print(f"  # Anchor [{a.anchor_type.value}]: {a.description} (step {a.turn_id})")
+    _print_distill_brief(result)
     return 0
 
 
@@ -345,6 +401,12 @@ def session_main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--version", action="version", version=f"session {__version__}")
     commands = parser.add_subparsers(dest="command", required=True)
     _add_handoff_arguments(commands.add_parser("handoff", help="Previous session writes a short handoff."))
+    _add_source_arguments(
+        commands.add_parser(
+            "continue",
+            help="Print the cropped dialogue for the calling agent. No decision prune.",
+        )
+    )
     _add_distill_arguments(
         commands.add_parser("distill", help="Next session analyzes a known previous session."),
         with_inspect=True,
@@ -353,6 +415,8 @@ def session_main(argv: Optional[List[str]] = None) -> int:
     args = parser.parse_args(argv)
     if args.command == "handoff":
         return handle_send(args)
+    if args.command == "continue":
+        return handle_continue(args)
     if args.command == "distill":
         return _dispatch_distill(args)
     if args.command == "search":
@@ -390,6 +454,22 @@ def distill_main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--version", action="version", version=f"session-distill {__version__}")
     _add_distill_arguments(parser, with_inspect=True)
     return _dispatch_distill(parser.parse_args(args))
+
+
+def continue_main(argv: Optional[List[str]] = None) -> int:
+    """Entry point for ``session-continue``.
+
+    Prints the cropped user/public dialogue. The calling agent reads this
+    stdout. Decision pruning stays in ``session-distill``.
+    """
+
+    parser = argparse.ArgumentParser(
+        prog="session-continue",
+        description="Print a previous session's user messages and public replies.",
+    )
+    parser.add_argument("--version", action="version", version=f"session-continue {__version__}")
+    _add_source_arguments(parser)
+    return handle_continue(parser.parse_args(argv))
 
 
 def search_main(argv: Optional[List[str]] = None) -> int:

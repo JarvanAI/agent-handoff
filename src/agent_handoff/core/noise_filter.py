@@ -5,6 +5,10 @@ Pure-Python deterministic cleaning running in sub-milliseconds:
 - Compresses unsemantic bash/ls/find verbose stdout
 - Removes ANSI codes, progress bars, and HTTP polling noise
 - Strips system heartbeats and injected skill boilerplate
+
+`crop_dialogue` is the cut shared by session-distill and session-continue:
+user messages and public assistant replies only. Tool calls, tool output,
+reasoning, and harness reminders are dropped.
 """
 
 from __future__ import annotations
@@ -35,15 +39,58 @@ class NoiseFilter:
         "clear",
     }
 
-    # Injected skill boilerplates to strip
+    # Harness blocks. Attributes are allowed on the opening tag. The body goes too.
+    _HARNESS_TAGS: Tuple[str, ...] = (
+        "EXTREMELY_IMPORTANT",
+        "EXTREMELY-IMPORTANT",
+        "SUBAGENT-STOP",
+        "INSTRUCTIONS",
+        "user_info",
+        "user_rules",
+        "rules",
+        "user_rule",
+        "system-reminder",
+        "thinking",
+        "think",
+        "git_status",
+        "agent_transcripts",
+        "agent_skills",
+        "available_skills",
+        "agent_skill",
+        "available_subagent_types",
+        "available_subagent_models",
+        "dynamic_tools",
+        "dynamic_tool_namespaces",
+        "hooks_context",
+        "always_applied_workspace_rules",
+        "always_applied_workspace_rule",
+    )
     _INJECTED_SKILL_PATTERNS: List[Pattern[str]] = [
-        re.compile(r"<EXTREMELY_IMPORTANT>.*?</EXTREMELY_IMPORTANT>", re.DOTALL | re.IGNORECASE),
-        re.compile(r"<SUBAGENT-STOP>.*?</SUBAGENT-STOP>", re.DOTALL | re.IGNORECASE),
+        re.compile(rf"<{name}\b[^>]*>.*?</{name}>", re.DOTALL | re.IGNORECASE)
+        for name in _HARNESS_TAGS
+    ] + [
         re.compile(r"Base directory for this skill:.*?\n", re.IGNORECASE),
-        re.compile(r"<INSTRUCTIONS>.*?</INSTRUCTIONS>", re.DOTALL | re.IGNORECASE),
-        re.compile(r"<user_info>.*?</user_info>", re.DOTALL | re.IGNORECASE),
-        re.compile(r"<user_rules>.*?</user_rules>", re.DOTALL | re.IGNORECASE),
     ]
+
+    _USER_QUERY_RE: Pattern[str] = re.compile(
+        r"<user_query>(.*?)</user_query>", re.DOTALL | re.IGNORECASE
+    )
+
+    _REASONING_MARKERS: Set[str] = {
+        "reasoning",
+        "thinking",
+        "redacted_thinking",
+        "agent_internal_thinking",
+        "internal_thinking",
+        "thought",
+    }
+
+    _HARNESS_REASONS: Set[str] = {
+        "system_reminder",
+        "skill_injection",
+    }
+
+    _BLANK_RUN_RE: Pattern[str] = re.compile(r"\n{3,}")
 
     def __init__(
         self,
@@ -67,7 +114,96 @@ class NoiseFilter:
         if self.strip_injected_skills:
             for pat in self._INJECTED_SKILL_PATTERNS:
                 text = pat.sub("", text)
+        text = self._BLANK_RUN_RE.sub("\n\n", text)
         return text.strip()
+
+    def _marker_values(self, turn: UnifiedTurn) -> Set[str]:
+        values: Set[str] = set()
+        for key in ("type", "source", "provenance", "synthetic_reason"):
+            raw = turn.metadata.get(key)
+            if raw:
+                values.add(str(raw).lower())
+        return values
+
+    def is_reasoning(self, turn: UnifiedTurn) -> bool:
+        """True when the turn is private model reasoning, not a public reply."""
+        if self._marker_values(turn) & self._REASONING_MARKERS:
+            return True
+        return bool(turn.metadata.get("thinking")) and not (turn.content or "").strip()
+
+    def is_harness_turn(self, turn: UnifiedTurn) -> bool:
+        """True for injected reminders that are stored on the user channel."""
+        return bool(self._marker_values(turn) & self._HARNESS_REASONS)
+
+    def public_text(self, turn: UnifiedTurn) -> str:
+        """User text and public assistant text after harness wrappers are removed."""
+        text = turn.content or ""
+        if turn.role == TurnRole.USER:
+            queries = [part.strip() for part in self._USER_QUERY_RE.findall(text)]
+            queries = [part for part in queries if part]
+            if queries:
+                text = "\n\n".join(queries)
+        return self.clean_text(text)
+
+    def crop_dialogue(
+        self, turns: List[UnifiedTurn]
+    ) -> Tuple[List[UnifiedTurn], Dict[str, Any]]:
+        """Keep user messages and public replies. Drop tools and reasoning.
+
+        session-distill and session-continue both call this. Decision pruning
+        stays in the distill state machine and does not happen here.
+        """
+        kept: List[UnifiedTurn] = []
+        stats: Dict[str, int] = {
+            "total_input_turns": len(turns),
+            "dropped_tools": 0,
+            "dropped_reasoning": 0,
+            "dropped_system": 0,
+            "dropped_empty": 0,
+            "kept_turns": 0,
+        }
+
+        for turn in turns:
+            if self.is_reasoning(turn):
+                stats["dropped_reasoning"] += 1
+                continue
+            if turn.role == TurnRole.TOOL or (
+                not (turn.content or "").strip() and (turn.tool_calls or turn.tool_results)
+            ):
+                stats["dropped_tools"] += 1
+                continue
+            if turn.role == TurnRole.SYSTEM or self.is_harness_turn(turn):
+                stats["dropped_system"] += 1
+                continue
+            if turn.role not in (TurnRole.USER, TurnRole.ASSISTANT):
+                stats["dropped_system"] += 1
+                continue
+
+            content = self.public_text(turn)
+            if not content:
+                stats["dropped_empty"] += 1
+                continue
+
+            metadata = {
+                key: value
+                for key, value in turn.metadata.items()
+                if key not in {"thinking", "reasoning", "encrypted_content"}
+            }
+            kept.append(
+                UnifiedTurn(
+                    turn_id=turn.turn_id,
+                    session_id=turn.session_id,
+                    timestamp=turn.timestamp,
+                    role=turn.role,
+                    content=content,
+                    tool_calls=[],
+                    tool_results=[],
+                    metadata=metadata,
+                )
+            )
+
+        stats["kept_turns"] = len(kept)
+        return kept, stats
 
     def compress_stdout(self, stdout: str, command: str = "") -> str:
         """Compress unsemantic verbose stdout (e.g. ls, find, tree) while keeping signal."""

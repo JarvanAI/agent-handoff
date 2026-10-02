@@ -23,9 +23,10 @@ It edited 47 files, failed 12 tests, pivoted across 3 database schemas, and fina
 
 ### 💡 The Solution: handoff
 
-Agents call this as a Skill plus a CLI. Three commands match three situations:
+Agents call this as a Skill plus a CLI. Four commands match four situations:
 - **`session-handoff`**: the current session writes a short handoff for the next session.
-- **`session-distill`**: the next session analyzes one known previous session (bidirectional anchoring and latest-wins pruning).
+- **`session-continue`**: print one known session cropped to user messages and public replies. The calling agent reads that stdout.
+- **`session-distill`**: a child process crops the same way, then prints only the decision brief so the calling agent's context stays small.
 - **`session-search`**: find which past session matches a query. agentsview is used when it is installed.
 
 ```text
@@ -59,7 +60,7 @@ Agents call this as a Skill plus a CLI. Three commands match three situations:
   - **Claude Code** (`~/.claude/projects/`, `~/.claude/history.jsonl`)
   - **Cursor** (`~/.cursor/chats/`, `~/.cursor/projects/`)
   - **Codex** (`~/.codex/sessions/`, `~/.codex/history.jsonl`)
-  - **Grok** (Exported JSON chat history)
+  - **Grok** (`~/.grok/sessions/<cwd>/<id>/chat_history.jsonl`, or an exported JSON chat)
 - 📦 **Dual-Form Outputs**:
   - **Human-Facing**: Production-grade Architecture Decision Records (ADR) and defensive Q&A playbooks.
   - **Agent-Facing**: Zero-Loss A2A Handoff Envelope for seamless multi-agent orchestration.
@@ -75,17 +76,20 @@ pip install -e .
 # 1. Previous session writes a handoff. This does not read an old transcript.
 session-handoff --summary "PG stays; do not revive ES."
 
-# 2. Next session analyzes one known session and may write files.
+# 2. Calling agent loads the cropped dialogue.
+session-continue --from grok --session <session_id>
+
+# 3. Child process returns the decision brief. It does not print the dialogue.
 session-distill \
   --from antigravity \
   --session e6129792-626d-48e2-bb79-be9d34b32829 \
   --output-playbook ./playbook.md \
   --output-handoff ./handoff.json
 
-# 3. Same analysis, terminal only.
+# 4. Same analysis, terminal only.
 session-distill --inspect e6129792-626d-48e2-bb79-be9d34b32829 --from antigravity
 
-# 4. Find a session, then distill that id.
+# 5. Find a session, then distill that id.
 session-search "BaseSessionAdapter" --json
 ```
 

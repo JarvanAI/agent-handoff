@@ -28,6 +28,7 @@ vector = ["sqlite-vec>=0.1.3"]
 session = "agent_handoff.cli:session_main"
 session-handoff = "agent_handoff.cli:handoff_main"
 session-distill = "agent_handoff.cli:distill_main"
+session-continue = "agent_handoff.cli:continue_main"
 session-search = "agent_handoff.cli:search_main"
 agent-handoff = "agent_handoff.cli:main"
 handoff = "agent_handoff.cli:main"
