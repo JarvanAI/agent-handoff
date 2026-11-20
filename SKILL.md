@@ -5,7 +5,7 @@ description: Universal Multi-Agent Handoff Protocol, trajectory distillation, an
 
 # handoff
 
-A universal, zero-token, deterministic Multi-Agent Handoff Protocol and trajectory distillation engine.
+A cross-provider session handoff, continuation, and trajectory distillation workflow.
 
 - **`session-handoff`**: the current session writes a short handoff for the next session. It does not read the old transcript.
 - **`session-continue`**: print the previous session's user messages and public replies. The calling agent reads that stdout and continues. Do not open the raw transcript.
@@ -15,6 +15,13 @@ A universal, zero-token, deterministic Multi-Agent Handoff Protocol and trajecto
 The shared crop drops tool calls, tool output, reasoning, and harness reminders such as `<system-reminder>`, `<user_info>`, and `<user_rules>`. When a user message contains `<user_query>`, only that inner text is kept.
 
 The caller is an Agent. This Skill says which scenario applies; the CLI does the work. `session handoff|continue|distill|search` also runs, but Agents should use the hyphenated commands. Arborist-Orca's "session handoff" reading procedure (`ao-session-read.py`) is a different workflow.
+
+## Previous-session reading
+
+For `session-continue`, read [bounded continuation reading](references/continuation-reading.md)
+when the output is large/unknown, a return is truncated, or the request includes OA takeover.
+It covers exact-target selection, caching the existing cropped stdout once, bounded reading,
+historical summaries, and honest coverage. It does not add CLI flags or raw-transcript access.
 
 ## Supported Platforms
 - **Antigravity** (`~/.gemini/antigravity-cli/brain/<id>/`)
