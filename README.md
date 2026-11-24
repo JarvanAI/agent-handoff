@@ -1,3 +1,5 @@
+> **Archived (2026-11-24):** All session handoff, continuation, distillation, and search capabilities from `agent-handoff` have been merged into **[OpenA2A](https://github.com/JarvanAI/opena2a)** (`opena2a session handoff|continue|distill|search|inspect|read|relocate`). Please use OpenA2A for all ongoing development and usage.
+
 # ⚡ handoff
 
 > **Universal Multi-Agent Handoff Protocol & Trajectory Distillation Engine.**  
